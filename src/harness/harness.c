@@ -155,8 +155,8 @@ void Harness_Init(int* argc, char* argv[]) {
     harness_game_config.freeze_timer = 0;
     // default demo time out is 240s
     harness_game_config.demo_timeout = 240000;
-    // disable developer diagnostics by default
-    harness_game_config.enable_diagnostics = 0;
+    // enable developer diagnostics by default
+    harness_game_config.enable_diagnostics = 1;
     // no volume multiplier
     harness_game_config.volume_multiplier = 1.0f;
     // start window in windowed mode

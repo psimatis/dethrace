@@ -102,22 +102,6 @@ void PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vect
 void ProcessCurrentObjective(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand) {
     LOG_TRACE("(%p, %d)", pOpponent_spec, pCommand);
 
-    const char* obj_str = "UNKNOWN";
-    switch (pOpponent_spec->current_objective) {
-    case eOOT_none: obj_str = "eOOT_none"; break;
-    case eOOT_complete_race: obj_str = "eOOT_complete_race"; break;
-    case eOOT_pursue_and_twat: obj_str = "eOOT_pursue_and_twat"; break;
-    case eOOT_run_away: obj_str = "eOOT_run_away"; break;
-    case eOOT_get_near_player: obj_str = "eOOT_get_near_player"; break;
-    case eOOT_levitate: obj_str = "eOOT_levitate"; break;
-    case eOOT_knackered_and_freewheeling: obj_str = "eOOT_knackered_and_freewheeling"; break;
-    case eOOT_frozen: obj_str = "eOOT_frozen"; break;
-    case eOOT_wait_for_some_hapless_sod: obj_str = "eOOT_wait_for_some_hapless_sod"; break;
-    case eOOT_rematerialise: obj_str = "eOOT_rematerialise"; break;
-    case eOOT_return_to_start: obj_str = "eOOT_return_to_start"; break;
-    }
-    printf("[Objective] %s: %s\n", pOpponent_spec->car_spec->driver_name, obj_str);
-
     switch (pOpponent_spec->current_objective) {
     case eOOT_complete_race:
         ProcessCompleteRace(pOpponent_spec, pCommand);
@@ -804,6 +788,7 @@ void ProcessCompleteRace(tOpponent_spec* pOpponent_spec, tProcess_objective_comm
         break;
     case ePOC_run:
         if (pOpponent_spec->follow_path_data.section_no > 20000) {
+            printf("The weird >20000 if statement in ProcessCompleteRace happened for %s\n", pOpponent_spec->car_spec->driver_name);
             ShiftOpponentsProjectedRoute(pOpponent_spec, pOpponent_spec->follow_path_data.section_no - 20000);
             pOpponent_spec->follow_path_data.section_no = 20000;
         }
@@ -1646,6 +1631,7 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
             return;
         }
         if (!pOpponent_spec->pursue_from_start || gMellow_opponents) {
+            printf("Opponent %s is gonna complete the race\n", pOpponent_spec->car_spec->driver_name);
             NewObjective(pOpponent_spec, eOOT_complete_race);
             return;
         }
