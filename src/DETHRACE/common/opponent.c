@@ -1436,9 +1436,11 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
     char str[255];
     LOG_TRACE("(%p, %d)", pOpponent_spec, pMust_choose_one);
 
+    // Handle knackered
     if (pOpponent_spec->current_objective == eOOT_knackered_and_freewheeling || pOpponent_spec->knackeredness_detected)
         return;
 
+    // Handle out of bounds
     if (gTime_stamp_for_this_munging > pOpponent_spec->next_out_of_world_check) {
         pOpponent_spec->next_out_of_world_check = gTime_stamp_for_this_munging + 500;
         if (HasCarFallenOffWorld(pOpponent_spec->car_spec)) {
@@ -1454,6 +1456,8 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
             return;
         }
     }
+
+    // Handle newly knackered
     if (pOpponent_spec->car_spec->knackered && !pOpponent_spec->knackeredness_detected) {
         pOpponent_spec->knackeredness_detected = 1;
         dr_dprintf("%s: Knackered - dealing with appropriately", pOpponent_spec->car_spec->driver_name);
@@ -1463,6 +1467,8 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
             NewObjective(pOpponent_spec, eOOT_knackered_and_freewheeling);
         return;
     }
+
+    // Handle frozen
     if (pOpponent_spec->current_objective == eOOT_frozen) {
         if (CAR_SPEC_GET_SPEED_FACTOR(pOpponent_spec->car_spec) != 0.0f) {
             dr_dprintf("%s: Time to unfreeze", pOpponent_spec->car_spec->driver_name);
@@ -1473,6 +1479,8 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
         }
         return;
     }
+
+    // if not moving, switch to frozen, if it was pursuing before freezing it resumes.
     int pursuit_percentage;
     if (CAR_SPEC_GET_SPEED_FACTOR(pOpponent_spec->car_spec) == 0.0f) {
         dr_dprintf("%s: Decided to freeze", pOpponent_spec->car_spec->driver_name);
@@ -1483,6 +1491,8 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
         NewObjective(pOpponent_spec, eOOT_frozen);
         return;
     }
+
+    //  Handles decision to run away,pursue or ignore, based on factors like proximity, aggression, and recent events.
     if (!gFirst_frame) {
         int general_grudge_increase = (pOpponent_spec->nastiness * 40.0f + 10.0f);
         if (pOpponent_spec->car_spec->scary_bang && pOpponent_spec->player_to_oppo_d < 10.0f) {
@@ -1556,9 +1566,13 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
             }
         }
     }
+
     if (!pMust_choose_one)
         return;
+
     dr_dprintf("%s: Choosing new objective because we have to...", pOpponent_spec->car_spec->driver_name);
+
+    //  Pick next objective (cop or not), depending on #opponents pursuing/near, #completed the race, #distance.
     if (pOpponent_spec->has_moved_at_some_point) {
         if (CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec)) {
             NewObjective(pOpponent_spec, eOOT_return_to_start);
@@ -1582,10 +1596,12 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
         NewObjective(pOpponent_spec, eOOT_get_near_player);
         return;
     }
+
     if (CAR_SPEC_IS_ROZZER(pOpponent_spec->car_spec)) {
         NewObjective(pOpponent_spec, eOOT_wait_for_some_hapless_sod);
         return;
     }
+
     if (!pOpponent_spec->pursue_from_start || gMellow_opponents) {
         printf("Opponent %s is gonna complete the race\n", pOpponent_spec->car_spec->driver_name);
         NewObjective(pOpponent_spec, eOOT_complete_race);
