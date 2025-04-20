@@ -835,7 +835,8 @@ enum ExceptionFlags {
 
 #define TIME_CONV_THING 0.0005f
 
-#define OPPONENT_COUNT 5
+// Reduced opponent count from 5 to 1 to debug
+#define OPPONENT_COUNT 1
 
 #define WORLD_SCALE 6.9f
 

@@ -1491,7 +1491,7 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
         NewObjective(pOpponent_spec, eOOT_frozen);
         return;
     }
-
+    
     //  Handles decision to run away,pursue or ignore, based on factors like proximity, aggression, and recent events.
     if (!gFirst_frame) {
         int general_grudge_increase = (pOpponent_spec->nastiness * 40.0f + 10.0f);
@@ -1724,30 +1724,30 @@ void ForceRebuildActiveCarList(void) {
 }
 
 // IDA: void __usercall StartToCheat(tOpponent_spec *pOpponent_spec@<EAX>)
-void StartToCheat(tOpponent_spec* pOpponent_spec) {
-    LOG_TRACE("(%p)", pOpponent_spec);
-
-    dr_dprintf("%s: StartToCheat() - Starting to cheat", pOpponent_spec->car_spec->driver_name);
-    pOpponent_spec->cheating = 1;
-    if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
-        dr_dprintf("%s: StartToCheat() - Turning physics OFF", pOpponent_spec->car_spec->driver_name);
-        TurnOpponentPhysicsOff(pOpponent_spec);
-        RebuildActiveCarList();
-    }
-}
+// void StartToCheat(tOpponent_spec* pOpponent_spec) {
+//     LOG_TRACE("(%p)", pOpponent_spec);
+//
+//     dr_dprintf("%s: StartToCheat() - Starting to cheat", pOpponent_spec->car_spec->driver_name);
+//     pOpponent_spec->cheating = 1;
+//     if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
+//         dr_dprintf("%s: StartToCheat() - Turning physics OFF", pOpponent_spec->car_spec->driver_name);
+//         TurnOpponentPhysicsOff(pOpponent_spec);
+//         RebuildActiveCarList();
+//     }
+// }
 
 // IDA: void __usercall OiStopCheating(tOpponent_spec *pOpponent_spec@<EAX>)
-void OiStopCheating(tOpponent_spec* pOpponent_spec) {
-    LOG_TRACE("(%p)", pOpponent_spec);
-
-    dr_dprintf("%s: OiStopCheating() - End of cheating sesh", pOpponent_spec->car_spec->driver_name);
-    pOpponent_spec->cheating = 0;
-    if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
-        dr_dprintf("%s: OiStopCheating() - Turning physics ON", pOpponent_spec->car_spec->driver_name);
-        TurnOpponentPhysicsOn(pOpponent_spec);
-        RebuildActiveCarList();
-    }
-}
+// void OiStopCheating(tOpponent_spec* pOpponent_spec) {
+//     LOG_TRACE("(%p)", pOpponent_spec);
+//
+//     dr_dprintf("%s: OiStopCheating() - End of cheating sesh", pOpponent_spec->car_spec->driver_name);
+//     pOpponent_spec->cheating = 0;
+//     if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
+//         dr_dprintf("%s: OiStopCheating() - Turning physics ON", pOpponent_spec->car_spec->driver_name);
+//         TurnOpponentPhysicsOn(pOpponent_spec);
+//         RebuildActiveCarList();
+//     }
+// }
 
 // IDA: int __usercall TeleportCopToStart@<EAX>(tOpponent_spec *pOpponent_spec@<EAX>)
 int TeleportCopToStart(tOpponent_spec* pOpponent_spec) {
@@ -2223,13 +2223,15 @@ void LoadInOppoPaths(FILE* pF) {
             PDFatalError(s);
         }
         if (gAusterity_mode || gNet_mode != eNet_mode_none) {
-            gProgram_state.AI_vehicles.number_of_cops = GetAnInt(pF);
+            // gProgram_state.AI_vehicles.number_of_cops = GetAnInt(pF);
+            gProgram_state.AI_vehicles.number_of_cops = 0; // no cops for debugging
             for (j = 0; j < gProgram_state.AI_vehicles.number_of_cops; j++) {
                 GetALineAndDontArgue(pF, s);
             }
             gProgram_state.AI_vehicles.number_of_cops = 0;
         } else {
-            gProgram_state.AI_vehicles.number_of_cops = GetAnInt(pF);
+            // gProgram_state.AI_vehicles.number_of_cops = GetAnInt(pF);
+            gProgram_state.AI_vehicles.number_of_cops = 0; // no cops for debugging
             for (j = 0; j < gProgram_state.AI_vehicles.number_of_cops; j++) {
                 PossibleService();
                 GetNScalars(pF, 6, scalars);
