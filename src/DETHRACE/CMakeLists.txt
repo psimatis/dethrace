@@ -122,6 +122,7 @@ target_sources(dethrace_obj PRIVATE
     common/oppocar.c
     common/oppocar.h
     common/opponent.c
+    common/opponent_ai.c
     common/opponent.h
     common/oppoproc.c
     common/oppoproc.h

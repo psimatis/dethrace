@@ -75,27 +75,11 @@ extern tS16 gMobile_section;
 
 void PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vector);
 
-void ProcessCurrentObjective(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
-
-tS16 ReallocExtraPathNodes(int pHow_many_then);
-
-tS16 ReallocExtraPathSections(int pHow_many_then);
-
-int PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo);
-
-tS16 FindNearestPathNode(br_vector3* pActor_coords, br_scalar* pDistance);
-
-tS16 FindNearestPathSection(br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance);
-
-tS16 FindNearestGeneralSection(tCar_spec* pPursuee, br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance);
-
 void DeadStopCar(tCar_spec* pCar_spec);
 
 void TurnOpponentPhysicsOn(tOpponent_spec* pOpponent_spec);
 
 void TurnOpponentPhysicsOff(tOpponent_spec* pOpponent_spec);
-
-void NewObjective(tOpponent_spec* pOpponent_spec, tOpponent_objective_type pObjective_type, ...);
 
 void CalcRaceRoute(tOpponent_spec* pOpponent_spec);
 
@@ -117,8 +101,6 @@ void StunTheBugger(tOpponent_spec* pOpponent_spec, int pMilliseconds);
 
 void UnStunTheBugger(tOpponent_spec* pOpponent_spec);
 
-void ProcessCompleteRace(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
-
 void StartRecordingTrail(tCar_spec* pPursuee);
 
 void RecordNextTrailNode(tCar_spec* pPursuee);
@@ -127,19 +109,13 @@ tS16 FindNearestTrailSection(tOpponent_spec* pOpponent_spec, tCar_spec* pPursuee
 
 tS16 CalcNextTrailSection(tOpponent_spec* pOpponent_spec, int pSection);
 
-void ProcessPursueAndTwat(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
+int PointVisibleFromHere(br_vector3* pFrom, br_vector3* pTo);
 
-void ProcessRunAway(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
+tS16 FindNearestPathNode(br_vector3* pActor_coords, br_scalar* pDistance);
 
-void ProcessWaitForSomeHaplessSod(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
+tS16 FindNearestPathSection(br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance);
 
-void ProcessReturnToStart(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
-
-void ProcessLevitate(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
-
-void ProcessGetNearPlayer(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
-
-void ProcessFrozen(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand);
+tS16 FindNearestGeneralSection(tCar_spec* pPursuee, br_vector3* pActor_coords, br_vector3* pPath_direction, br_vector3* pIntersect, br_scalar* pDistance);
 
 int HeadOnWithPlayerPossible(tOpponent_spec* pOpponent_spec);
 
@@ -149,15 +125,7 @@ int LastTwatteeAPlayer(tOpponent_spec* pOpponent_spec);
 
 int LastTwatterAPlayer(tOpponent_spec* pOpponent_spec);
 
-void ObjectiveComplete(tOpponent_spec* pOpponent_spec);
-
 void TeleportOpponentToNearestSafeLocation(tOpponent_spec* pOpponent_spec);
-
-void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one);
-
-void ProcessThisOpponent(tOpponent_spec* pOpponent_spec);
-
-int IsNetCarActive(br_vector3* pPoint);
 
 void RebuildActiveCarList(void);
 
