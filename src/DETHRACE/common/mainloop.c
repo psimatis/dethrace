@@ -475,7 +475,8 @@ void CheckTimer(void) {
 
         if (harness_game_info.mode == eGame_carmageddon_demo || harness_game_info.mode == eGame_splatpack_demo || harness_game_info.mode == eGame_splatpack_xmas_demo) {
             if (harness_game_config.demo_timeout != 0) {
-                time_left = harness_game_config.demo_timeout - GetRaceTime();
+                // time_left = harness_game_config.demo_timeout - GetRaceTime();
+                time_left = GetRaceTime(); // removed demo timeout
                 time_in_seconds = (time_left + 500) / 1000;
                 if (time_in_seconds != last_demo_time_in_seconds && time_in_seconds <= 10)
                     DRS3StartSound(gPedestrians_outlet, 1001);

@@ -1579,21 +1579,21 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
             return;
         }
         if (gNum_of_opponents_pursuing + gNum_of_opponents_getting_near >= 3 || pOpponent_spec->player_to_oppo_d <= 10.0) {
-            if (gNum_of_opponents_completing_race >= 2) {
-                pursuit_percentage = pOpponent_spec->player_to_oppo_d - 15.0f;
-                if (PercentageChance(pursuit_percentage)) {
-                    dr_dprintf("%s: Choosing to get_near because chance dictated it (%d%%)", pOpponent_spec->car_spec->driver_name, pursuit_percentage);
-                    NewObjective(pOpponent_spec, eOOT_get_near_player);
-                    return;
-                }
-                dr_dprintf("%s: Choosing to complete_race because chance dictated it (%d%%)", pOpponent_spec->car_spec->driver_name, pursuit_percentage);
-            } else
+            // if (gNum_of_opponents_completing_race >= 2) {
+                // pursuit_percentage = pOpponent_spec->player_to_oppo_d - 15.0f;
+                // if (PercentageChance(pursuit_percentage)) {
+                //     dr_dprintf("%s: Choosing to get_near because chance dictated it (%d%%)", pOpponent_spec->car_spec->driver_name, pursuit_percentage);
+                //     NewObjective(pOpponent_spec, eOOT_get_near_player);
+                //     return;
+                // }
+                // dr_dprintf("%s: Choosing to complete_race because chance dictated it (%d%%)", pOpponent_spec->car_spec->driver_name, pursuit_percentage);
+            // } else
                 dr_dprintf("%s: Choosing to complete_race because not enough oppos are yet (%d/%d)", pOpponent_spec->car_spec->driver_name, gNum_of_opponents_completing_race, 2);
             NewObjective(pOpponent_spec, eOOT_complete_race);
             return;
         }
-        dr_dprintf("%s: Choosing to get_near because not enough oppos are yet (%d/%d)", pOpponent_spec->car_spec->driver_name, gNum_of_opponents_pursuing + gNum_of_opponents_getting_near, 3);
-        NewObjective(pOpponent_spec, eOOT_get_near_player);
+        // dr_dprintf("%s: Choosing to get_near because not enough oppos are yet (%d/%d)", pOpponent_spec->car_spec->driver_name, gNum_of_opponents_pursuing + gNum_of_opponents_getting_near, 3);
+        // NewObjective(pOpponent_spec, eOOT_get_near_player);
         return;
     }
 
