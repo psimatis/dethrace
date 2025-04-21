@@ -4614,7 +4614,6 @@ void ChooseNewObjective(tOpponent_spec* pOpponent_spec, int pMust_choose_one) {
 
 // IDA: void __usercall ProcessThisOpponent(tOpponent_spec *pOpponent_spec@<EAX>)
 void ProcessThisOpponent(tOpponent_spec* pOpponent_spec) {
-    int i;
     LOG_TRACE("(%p)", pOpponent_spec);
 
     if ((gMap_mode && gShow_opponents) || pOpponent_spec->last_in_view + 3000 >= gTime_stamp_for_this_munging) {
@@ -4640,29 +4639,23 @@ void ProcessThisOpponent(tOpponent_spec* pOpponent_spec) {
 void IncrementOpponentCheckpoint(tOpponent_spec* ai, int num_checkpoints, int num_laps) {
     if (ai->finished) return;
     ai->checkpoint++;
-    LOG_TRACE("AI %p checkpoint incremented to %d (lap %d)", ai, ai->checkpoint, ai->lap);
-    printf("AI %p at checkpoint %d (lap %d)\n", ai, ai->checkpoint, ai->lap);
+    dr_dprintf("%s: Reached checkpoint %d (lap %d)", ai->car_spec->driver_name, ai->checkpoint, ai->lap);
+    printf("AI %s at checkpoint %d (lap %d)\n", ai->car_spec->driver_name, ai->checkpoint, ai->lap);
     if (ai->checkpoint >= num_checkpoints) {
         ai->checkpoint = 0;
         ai->lap++;
-        LOG_TRACE("AI %p completed a lap! New lap: %d", ai, ai->lap);
-        printf("AI %p completed a lap! New lap: %d\n", ai, ai->lap);
-        // Optional: Log or trigger lap-complete effects
     }
     if (ai->lap >= num_laps) {
         ai->finished = 1;
-        LOG_TRACE("AI %p finished the race! (lap %d)", ai, ai->lap);
-        printf("AI %p finished the race! (lap %d)\n", ai, ai->lap);
-        // Only end the race if it isn't already finished
-        if (!gRace_finished) {
+        dr_dprintf("%s: Finished the race! (lap %d)", ai->car_spec->driver_name, ai->lap);
+        printf("AI %s finished the race! (lap %d)\n", ai->car_spec->driver_name, ai->lap);
+        if (!gRace_finished)
             RaceCompleted(eRace_over_out_of_time);
-        }
     }
 }
 
 void CheckOpponentCheckpoints(void) {
-    int i;
-    for (i = 0; i < gProgram_state.AI_vehicles.number_of_opponents; i++) {
+    for (int i = 0; i < gProgram_state.AI_vehicles.number_of_opponents; i++) {
         tOpponent_spec *opp = &gProgram_state.AI_vehicles.opponents[i];
         if (opp->finished) continue;
 
@@ -4677,22 +4670,17 @@ void CheckOpponentCheckpoints(void) {
 
         tCheckpoint *cp = &gCurrent_race.checkpoints[next_cp - 1];
 
-        int quad_count = cp->quad_count;
-        int crossed = 0;
         br_vector3 dir;
         BrVector3Sub(&dir, &pos_now, &pos_prev);
-        for (int j = 0; j < quad_count; j++) {
+        for (int j = 0; j < cp->quad_count; j++) {
             if (RayHitFace(&cp->vertices[j][0], &cp->vertices[j][1], &cp->vertices[j][2], &cp->normal[j], &pos_prev, &dir)) {
-                crossed = 1;
+                IncrementOpponentCheckpoint(opp, gCurrent_race.check_point_count, gCurrent_race.total_laps);
                 break;
             }
             if (RayHitFace(&cp->vertices[j][0], &cp->vertices[j][2], &cp->vertices[j][3], &cp->normal[j], &pos_prev, &dir)) {
-                crossed = 1;
+                IncrementOpponentCheckpoint(opp, gCurrent_race.check_point_count, gCurrent_race.total_laps);
                 break;
             }
-        }
-        if (crossed) {
-            IncrementOpponentCheckpoint(opp, gCurrent_race.check_point_count, gCurrent_race.total_laps);
         }
     }
 }
