@@ -815,8 +815,11 @@ void IncrementOpponentCheckpoint(tOpponent_spec* ai, int num_checkpoints, int nu
     if (ai->lap >= num_laps) {
         ai->finished = 1;
         LOG_TRACE("AI %p finished the race! (lap %d)", ai, ai->lap);
-        printf("AI %p finished the race! (lap %d)", ai, ai->lap);
-        // Optional: Trigger AI race finish logic, e.g. call ObjectiveComplete(ai);
+        printf("AI %p finished the race! (lap %d)\n", ai, ai->lap);
+        // Only end the race if it isn't already finished
+        if (!gRace_finished) {
+            RaceCompleted(eRace_over_out_of_time);
+        }
     }
 }
 
