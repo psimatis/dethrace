@@ -1569,6 +1569,7 @@ void MungeOpponents(tU32 pFrame_period) {
                 }
             }
         }
+        CheckOpponentCheckpoints();
         for (i = 0; i < gProgram_state.AI_vehicles.number_of_opponents; i++) {
             if (!gProgram_state.AI_vehicles.opponents[i].finished_for_this_race) {
                 if (un_stun_flag) {

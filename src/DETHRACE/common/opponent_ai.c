@@ -799,3 +799,61 @@ void ProcessThisOpponent(tOpponent_spec* pOpponent_spec) {
         BrVector3Copy(&pOpponent_spec->car_spec->pos, &pOpponent_spec->car_spec->car_master_actor->t.t.translate.t);
     }
 }
+
+void IncrementOpponentCheckpoint(tOpponent_spec* ai, int num_checkpoints, int num_laps) {
+    if (ai->finished) return;
+    ai->checkpoint++;
+    LOG_TRACE("AI %p checkpoint incremented to %d (lap %d)", ai, ai->checkpoint, ai->lap);
+    printf("AI %p at checkpoint %d (lap %d)\n", ai, ai->checkpoint, ai->lap);
+    if (ai->checkpoint >= num_checkpoints) {
+        ai->checkpoint = 0;
+        ai->lap++;
+        LOG_TRACE("AI %p completed a lap! New lap: %d", ai, ai->lap);
+        printf("AI %p completed a lap! New lap: %d\n", ai, ai->lap);
+        // Optional: Log or trigger lap-complete effects
+    }
+    if (ai->lap >= num_laps) {
+        ai->finished = 1;
+        LOG_TRACE("AI %p finished the race! (lap %d)", ai, ai->lap);
+        printf("AI %p finished the race! (lap %d)", ai, ai->lap);
+        // Optional: Trigger AI race finish logic, e.g. call ObjectiveComplete(ai);
+    }
+}
+
+void CheckOpponentCheckpoints(void) {
+    int i;
+    for (i = 0; i < gProgram_state.AI_vehicles.number_of_opponents; i++) {
+        tOpponent_spec *opp = &gProgram_state.AI_vehicles.opponents[i];
+        if (opp->finished) continue;
+
+        tCar_spec *car = opp->car_spec;
+        br_vector3 pos_now = car->car_master_actor->t.t.translate.t;
+        br_vector3 pos_prev;
+        BrVector3Copy(&pos_prev, (br_vector3 *)&car->old_frame_mat.m[3]);
+
+        int next_cp = opp->checkpoint + 1;
+        if (next_cp > gCurrent_race.check_point_count)
+            next_cp = 1;
+
+        tCheckpoint *cp = &gCurrent_race.checkpoints[next_cp - 1];
+
+        int quad_count = cp->quad_count;
+        int crossed = 0;
+        br_vector3 dir;
+        BrVector3Sub(&dir, &pos_now, &pos_prev);
+        for (int j = 0; j < quad_count; j++) {
+            if (RayHitFace(&cp->vertices[j][0], &cp->vertices[j][1], &cp->vertices[j][2], &cp->normal[j], &pos_prev, &dir)) {
+                crossed = 1;
+                break;
+            }
+            if (RayHitFace(&cp->vertices[j][0], &cp->vertices[j][2], &cp->vertices[j][3], &cp->normal[j], &pos_prev, &dir)) {
+                crossed = 1;
+                break;
+            }
+        }
+        if (crossed) {
+            printf("AI %d crossed the checkpoint (player logic)\n", i);
+            IncrementOpponentCheckpoint(opp, gCurrent_race.check_point_count, gCurrent_race.total_laps);
+        }
+    }
+}

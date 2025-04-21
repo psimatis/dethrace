@@ -1001,6 +1001,11 @@ typedef struct tOpponent_spec {                      // size: 0x190
     tLevitate_data levitate_data;                    // @0x170
     tRun_away_data run_away_data;                    // @0x17c
     tReturn_to_start_data return_to_start_data;      // @0x180
+
+    // In tOpponent_spec (or similar struct)
+    int lap;         // Current lap number for AI
+    int checkpoint;  // Current checkpoint index for AI
+    int finished;    // 1 if AI has finished the race, else 0
 } tOpponent_spec;
 
 typedef struct tIntelligent_vehicles {
