@@ -873,6 +873,11 @@ typedef struct tCar_spec_struct {              // size: 0x1a9c
     tS3_sound_tag horn_sound_tag;              // @0x1a98
 } tCar_spec;
 
+typedef enum {
+    AI_PROFILE_DEFAULT = 0,
+    AI_PROFILE_LAP_COMPLETER = 1,
+} eAIProfile;
+
 typedef struct tOppo_psyche {
     tU8 grudge_against_player;
 } tOppo_psyche;
@@ -1006,6 +1011,9 @@ typedef struct tOpponent_spec {                      // size: 0x190
     int lap;         // Current lap number for AI
     int checkpoint;  // Current checkpoint index for AI
     int finished;    // 1 if AI has finished the race, else 0
+
+    // AI profile
+    eAIProfile ai_profile;
 } tOpponent_spec;
 
 typedef struct tIntelligent_vehicles {

@@ -1,5 +1,7 @@
 # Create object files so we can link them into the main binary and into tests without building twice.
-add_library(dethrace_obj OBJECT)
+add_library(dethrace_obj OBJECT
+        common/ai_profiles_custom.h
+        common/ai_profile_custom.c)
 
 option(DETHRACE_REPLAY_DEBUG "Debug replay" OFF)
 
