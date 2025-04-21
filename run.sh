@@ -8,7 +8,7 @@ BUILD_RESULT=$?
 cd ..
 if [ $BUILD_RESULT -eq 0 ]; then
 #    ./build/dethrace > output.log 2>&1
-    ./build/dethrace > output.log
+    ./build/dethrace
 else
     echo "Build failed, not running game."
     exit 1

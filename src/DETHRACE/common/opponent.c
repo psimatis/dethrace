@@ -98,9 +98,37 @@ void PointActorAlongThisBloodyVector(br_actor* pThe_actor, br_vector3* pThe_vect
     BrTransformToTransform(&pThe_actor->t, &trans);
 }
 
+void PrintObjectiveIfChanged(tOpponent_spec* pOpponent_spec){
+    static tOpponent_objective_type last_objective = eOOT_none;
+    if (pOpponent_spec->current_objective == last_objective)
+        return;
+
+    last_objective = pOpponent_spec->current_objective;
+
+    const char* obj_name = NULL;
+    switch (pOpponent_spec->current_objective) {
+        case eOOT_none: obj_name = "None"; break;
+        case eOOT_complete_race: obj_name = "Complete Race"; break;
+        case eOOT_pursue_and_twat: obj_name = "Pursue and Twat"; break;
+        case eOOT_run_away: obj_name = "Run Away"; break;
+        case eOOT_get_near_player: obj_name = "Get Near Player"; break;
+        case eOOT_levitate: obj_name = "Levitate"; break;
+        case eOOT_knackered_and_freewheeling: obj_name = "Knackered and Freewheeling"; break;
+        case eOOT_frozen: obj_name = "Frozen"; break;
+        case eOOT_wait_for_some_hapless_sod: obj_name = "Wait For Some Hapless Sod"; break;
+        case eOOT_rematerialise: obj_name = "Rematerialise"; break;
+        case eOOT_return_to_start: obj_name = "Return To Start"; break;
+        default: obj_name = "Unknown"; break;
+    }
+
+    printf("%s objective: %s\n", pOpponent_spec->car_spec->driver_name, obj_name);
+}
+
 // IDA: void __usercall ProcessCurrentObjective(tOpponent_spec *pOpponent_spec@<EAX>, tProcess_objective_command pCommand@<EDX>)
 void ProcessCurrentObjective(tOpponent_spec* pOpponent_spec, tProcess_objective_command pCommand) {
     LOG_TRACE("(%p, %d)", pOpponent_spec, pCommand);
+
+    PrintObjectiveIfChanged(pOpponent_spec);
 
     switch (pOpponent_spec->current_objective) {
     case eOOT_complete_race:
@@ -788,7 +816,7 @@ void ProcessCompleteRace(tOpponent_spec* pOpponent_spec, tProcess_objective_comm
         break;
     case ePOC_run:
         if (pOpponent_spec->follow_path_data.section_no > 20000) {
-            printf("The weird >20000 if statement in ProcessCompleteRace happened for %s\n", pOpponent_spec->car_spec->driver_name);
+            // printf("The weird >20000 if statement in ProcessCompleteRace happened for %s\n", pOpponent_spec->car_spec->driver_name);
             ShiftOpponentsProjectedRoute(pOpponent_spec, pOpponent_spec->follow_path_data.section_no - 20000);
             pOpponent_spec->follow_path_data.section_no = 20000;
         }
@@ -1617,13 +1645,13 @@ void ProcessThisOpponent(tOpponent_spec* pOpponent_spec) {
     int i;
     LOG_TRACE("(%p)", pOpponent_spec);
 
-    // if ((gMap_mode && gShow_opponents) || pOpponent_spec->last_in_view + 3000 >= gTime_stamp_for_this_munging) {
-    //     if (pOpponent_spec->cheating) {
-    //         OiStopCheating(pOpponent_spec);
-    //     }
-    // } else if (pOpponent_spec->cheating == 0) {
-    //     StartToCheat(pOpponent_spec);
-    // }
+    if ((gMap_mode && gShow_opponents) || pOpponent_spec->last_in_view + 3000 >= gTime_stamp_for_this_munging) {
+        if (pOpponent_spec->cheating) {
+            OiStopCheating(pOpponent_spec);
+        }
+    } else if (pOpponent_spec->cheating == 0) {
+        StartToCheat(pOpponent_spec);
+    }
     ChooseNewObjective(pOpponent_spec, pOpponent_spec->new_objective_required);
     pOpponent_spec->new_objective_required = 0;
     if (gCountdown || gRace_finished) {
@@ -1724,30 +1752,30 @@ void ForceRebuildActiveCarList(void) {
 }
 
 // IDA: void __usercall StartToCheat(tOpponent_spec *pOpponent_spec@<EAX>)
-// void StartToCheat(tOpponent_spec* pOpponent_spec) {
-//     LOG_TRACE("(%p)", pOpponent_spec);
-//
-//     dr_dprintf("%s: StartToCheat() - Starting to cheat", pOpponent_spec->car_spec->driver_name);
-//     pOpponent_spec->cheating = 1;
-//     if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
-//         dr_dprintf("%s: StartToCheat() - Turning physics OFF", pOpponent_spec->car_spec->driver_name);
-//         TurnOpponentPhysicsOff(pOpponent_spec);
-//         RebuildActiveCarList();
-//     }
-// }
+void StartToCheat(tOpponent_spec* pOpponent_spec) {
+    LOG_TRACE("(%p)", pOpponent_spec);
+
+    dr_dprintf("%s: StartToCheat() - Starting to cheat", pOpponent_spec->car_spec->driver_name);
+    pOpponent_spec->cheating = 1;
+    if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
+        dr_dprintf("%s: StartToCheat() - Turning physics OFF", pOpponent_spec->car_spec->driver_name);
+        TurnOpponentPhysicsOff(pOpponent_spec);
+        RebuildActiveCarList();
+    }
+}
 
 // IDA: void __usercall OiStopCheating(tOpponent_spec *pOpponent_spec@<EAX>)
-// void OiStopCheating(tOpponent_spec* pOpponent_spec) {
-//     LOG_TRACE("(%p)", pOpponent_spec);
-//
-//     dr_dprintf("%s: OiStopCheating() - End of cheating sesh", pOpponent_spec->car_spec->driver_name);
-//     pOpponent_spec->cheating = 0;
-//     if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
-//         dr_dprintf("%s: OiStopCheating() - Turning physics ON", pOpponent_spec->car_spec->driver_name);
-//         TurnOpponentPhysicsOn(pOpponent_spec);
-//         RebuildActiveCarList();
-//     }
-// }
+void OiStopCheating(tOpponent_spec* pOpponent_spec) {
+    LOG_TRACE("(%p)", pOpponent_spec);
+
+    dr_dprintf("%s: OiStopCheating() - End of cheating sesh", pOpponent_spec->car_spec->driver_name);
+    pOpponent_spec->cheating = 0;
+    if ((pOpponent_spec->car_spec->car_ID & 0xff00) == 0x300) {
+        dr_dprintf("%s: OiStopCheating() - Turning physics ON", pOpponent_spec->car_spec->driver_name);
+        TurnOpponentPhysicsOn(pOpponent_spec);
+        RebuildActiveCarList();
+    }
+}
 
 // IDA: int __usercall TeleportCopToStart@<EAX>(tOpponent_spec *pOpponent_spec@<EAX>)
 int TeleportCopToStart(tOpponent_spec* pOpponent_spec) {
